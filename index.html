@@ -202,8 +202,10 @@ const dedication = document.getElementById("dedication");
 const visualizer = document.getElementById("visualizer");
 
 let index = 0;
+let bgMusicStarted = false;
+let songStarted = false;
 
-// Typing dots effect
+// Typing dots
 function showTypingDots(callback){
   const dots = document.createElement("div");
   dots.className="typing";
@@ -213,7 +215,7 @@ function showTypingDots(callback){
   setTimeout(()=>{ dots.remove(); callback(); },1200);
 }
 
-// Type message letter by letter
+// Type message
 function typeMessage(text, bubble, callback){
   let i=0;
   function type(){
@@ -260,15 +262,18 @@ function fadeOutBgMusic(callback){
   },100);
 }
 
-// Show dedication with hearts and visualizer
+// Dedication screen with hearts and visualizer
 function showDedication(){
   dedication.style.display="flex";
+
+  // play dedicated song safely on mobile
   song.play().catch(()=>{});
+
   createHearts(30);
   createVisualizer(20);
 }
 
-// Create floating hearts
+// Floating hearts
 function createHearts(count){
   for(let i=0;i<count;i++){
     const heart=document.createElement("div");
@@ -282,7 +287,7 @@ function createHearts(count){
   }
 }
 
-// Create visualizer bars
+// Music visualizer
 function createVisualizer(bars){
   for(let i=0;i<bars;i++){
     const bar=document.createElement("div");
@@ -298,11 +303,23 @@ startBtn.addEventListener("click",()=>{
   chatContainer.style.display="flex";
 
   // Start bg music at 9s
-  bgMusic.currentTime=9;
-  bgMusic.play().catch(()=>{});
+  if(!bgMusicStarted){
+    bgMusic.currentTime=9;
+    bgMusic.volume=1;
+    bgMusic.play().catch(()=>{});
+    bgMusicStarted=true;
+  }
+
+  // Load dedicated song to satisfy mobile autoplay rules
+  if(!songStarted){
+    song.volume=1;
+    song.load();
+    songStarted=true;
+  }
 
   nextMessage();
 });
 </script>
 </body>
 </html>
+
