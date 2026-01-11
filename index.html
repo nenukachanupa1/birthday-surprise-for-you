@@ -22,18 +22,18 @@ body {
   text-align: center;
 }
 
-.start-btn {
+.start-btn, #dedicateBtn {
   background: #ec4899;
   color: white;
   border: none;
-  padding: 20px 40px;
+  padding: 15px 30px;
   border-radius: 25px;
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: 0.3s;
 }
 
-.start-btn:hover { background: #f472b6; }
+.start-btn:hover, #dedicateBtn:hover { background: #f472b6; }
 
 .chat-container {
   width: 100%;
@@ -46,8 +46,6 @@ body {
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0,0,0,0.6);
   position: relative;
-  opacity: 1;
-  transition: opacity 2s ease;
 }
 
 .header {
@@ -135,6 +133,10 @@ body {
 @keyframes pulse {
   0% { height: 10px; }
   100% { height: 50px; }
+}
+
+#dedicateBtn {
+  margin-top: 20px;
 }
 </style>
 </head>
@@ -231,7 +233,7 @@ function typeMessage(text, bubble, callback){
 // Next message
 function nextMessage(){
   if(index>=messages.length){
-    fadeOutBgMusic(showDedication);
+    showDedicateButton();
     return;
   }
   showTypingDots(()=>{
@@ -262,18 +264,7 @@ function fadeOutBgMusic(callback){
   },100);
 }
 
-// Dedication screen with hearts and visualizer
-function showDedication(){
-  dedication.style.display="flex";
-
-  // play dedicated song safely on mobile
-  song.play().catch(()=>{});
-
-  createHearts(30);
-  createVisualizer(20);
-}
-
-// Floating hearts
+// Create hearts
 function createHearts(count){
   for(let i=0;i<count;i++){
     const heart=document.createElement("div");
@@ -297,12 +288,31 @@ function createVisualizer(bars){
   }
 }
 
+// Show the “This song for you” button
+function showDedicateButton(){
+  const btn = document.createElement("button");
+  btn.id="dedicateBtn";
+  btn.textContent="🎵 This song is for you";
+  chat.appendChild(btn);
+  chat.scrollTop = chat.scrollHeight;
+
+  btn.addEventListener("click", ()=>{
+    // Fade out background music
+    fadeOutBgMusic(()=>{
+      dedication.style.display="flex";
+      song.play().catch(()=>{});
+      createHearts(30);
+      createVisualizer(20);
+      btn.style.display="none"; // hide button
+    });
+  });
+}
+
 // Start button
 startBtn.addEventListener("click",()=>{
   startScreen.style.display="none";
   chatContainer.style.display="flex";
 
-  // Start bg music at 9s
   if(!bgMusicStarted){
     bgMusic.currentTime=9;
     bgMusic.volume=1;
@@ -310,7 +320,6 @@ startBtn.addEventListener("click",()=>{
     bgMusicStarted=true;
   }
 
-  // Load dedicated song to satisfy mobile autoplay rules
   if(!songStarted){
     song.volume=1;
     song.load();
@@ -322,4 +331,3 @@ startBtn.addEventListener("click",()=>{
 </script>
 </body>
 </html>
-
